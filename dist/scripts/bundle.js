@@ -32020,6 +32020,7 @@ var React = require('react');
 var Router = require('react-router');
 var Input = require('./input');
 var TodoList = require('./list/todoList');
+var CompletedList = require('./list/completedList');
 var Link = Router.Link;
 
 var Home = React.createClass({displayName: "Home",
@@ -32027,8 +32028,12 @@ var Home = React.createClass({displayName: "Home",
 		return {
 			todoItems: [],
 			completedItems: [],
-			count: 1
+			count: 0
 		};
+	},
+
+	onCompleted: function() {
+		console.log('test');
 	},
 
     handleSubmit: function(e) {
@@ -32038,7 +32043,7 @@ var Home = React.createClass({displayName: "Home",
 	        list.push(newItem);
 	        this.setState({todoItems: list, count: this.state.count + 1});
 	        event.target.value = '';
-	        console.log(this.state.todoItems);
+	        // console.log(this.state.todoItems);
 	    }
     },
 
@@ -32053,7 +32058,7 @@ var Home = React.createClass({displayName: "Home",
 					placeholder: "What needs to be done?", 
 					value: this.value, 
 					onKeyDown: this.handleSubmit}), 
-				React.createElement(TodoList, {items: this.state.todoItems})
+				React.createElement(TodoList, {todoList: this.state.todoItems, completedList: this.state.completedItems, onCompleted: this.onCompleted})
 			)
 		);
 	}
@@ -32061,7 +32066,7 @@ var Home = React.createClass({displayName: "Home",
 
 module.exports = Home;
 
-},{"./input":200,"./list/todoList":202,"react":196,"react-router":27}],200:[function(require,module,exports){
+},{"./input":200,"./list/completedList":201,"./list/todoList":202,"react":196,"react-router":27}],200:[function(require,module,exports){
 // "use strict";
 
 // var React = require('react');
@@ -32097,11 +32102,7 @@ var CompletedList = React.createClass({displayName: "CompletedList",
 	render: function() {
 		return (
 			React.createElement("div", null, 
-				
-		          this.state.todoItems.map(function(item) {
-		            return React.createElement("div", {className: "item", key: item}, item)
-		          })
-			    
+				"test"
 			)
 		);
 	}
@@ -32114,18 +32115,31 @@ module.exports = CompletedList;
 
 var React = require('react');
 var Router = require('react-router');
-var Input = require('../input');
 var Link = Router.Link;
 
 var TodoList = React.createClass({displayName: "TodoList",
+	markCompleted: function(item) {
+		var todoList = this.props.todoList,
+			completedList = this.props.completedList,
+			itemToRemove = item;
+		todoList.splice(item.id, 1);
+		this.setState({todoItems: todoList});
+	},
 
 	render: function() {
-		//console.log(this.state.todoItems);
+		var self = this;
 		return (
 			React.createElement("div", null, 
 				
-		          this.props.items.map(function(item) {
-		            return React.createElement("div", {className: "item", key: item.id}, item.value)
+		          this.props.todoList.map(function(item, i) {
+		            return (
+		            	React.createElement("div", {className: "item", key: item.id}, 
+		            		React.createElement("span", {className: "glyphicon glyphicon-ok check", 
+		            			onClick: self.markCompleted.bind(self, item)}), 
+		            		React.createElement("span", {className: "itemValue"}, item.id, " ", item.value), 
+		            		React.createElement("span", {className: "glyphicon glyphicon-trash delete"})
+		            	)
+		            )
 		          })
 			    
 			)
@@ -32135,7 +32149,7 @@ var TodoList = React.createClass({displayName: "TodoList",
 
 module.exports = TodoList;
 
-},{"../input":200,"react":196,"react-router":27}],203:[function(require,module,exports){
+},{"react":196,"react-router":27}],203:[function(require,module,exports){
 "use strict";
 
 var React = require('react');

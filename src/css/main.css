@@ -41,4 +41,30 @@ html, body{
 .item{
 	padding: 20px 10px;
 	border-top: 1px solid rgba(0,0,0,.2);
+	line-height: 20px;
+	font-size: 22px;
+}
+
+.itemValue{
+	padding-left:15px;
+}
+
+.check{
+	font-size: 20px;
+	color:#0BA623;
+	cursor: pointer;
+	opacity: .2;
+}
+.check:hover{
+	opacity: 1;
+}
+.delete{
+	font-size: 20px;
+	color:#BF142D;
+	float: right;
+	cursor: pointer;
+	opacity: .2;
+}
+.delete:hover{
+	opacity: .8;
 }

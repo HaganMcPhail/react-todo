@@ -4,6 +4,7 @@ var React = require('react');
 var Router = require('react-router');
 var Input = require('./input');
 var TodoList = require('./list/todoList');
+var CompletedList = require('./list/completedList');
 var Link = Router.Link;
 
 var Home = React.createClass({
@@ -11,8 +12,12 @@ var Home = React.createClass({
 		return {
 			todoItems: [],
 			completedItems: [],
-			count: 1
+			count: 0
 		};
+	},
+
+	onCompleted: function() {
+		console.log('test');
 	},
 
     handleSubmit: function(e) {
@@ -22,7 +27,7 @@ var Home = React.createClass({
 	        list.push(newItem);
 	        this.setState({todoItems: list, count: this.state.count + 1});
 	        event.target.value = '';
-	        console.log(this.state.todoItems);
+	        // console.log(this.state.todoItems);
 	    }
     },
 
@@ -37,7 +42,7 @@ var Home = React.createClass({
 					placeholder="What needs to be done?"
 					value={this.value}
 					onKeyDown={this.handleSubmit} />
-				<TodoList items={this.state.todoItems} />
+				<TodoList todoList={this.state.todoItems} completedList={this.state.completedItems} onCompleted={this.onCompleted} />
 			</div>
 		);
 	}

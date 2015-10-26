@@ -16,6 +16,7 @@ var config = {
 		html: './src/*.html',
 		js: './src/**/*.js',
 		images: './src/images/*',
+		fonts: './src/fonts/*',
 		css: [
       		'node_modules/bootstrap/dist/css/bootstrap.min.css',
       		'node_modules/bootstrap/dist/css/bootstrap-theme.min.css',
@@ -45,6 +46,12 @@ gulp.task('open', ['connect'], function() {
 gulp.task('html', function() {
 	gulp.src(config.paths.html)
 		.pipe(gulp.dest(config.paths.dist))
+		.pipe(connect.reload());
+});
+
+gulp.task('fonts', function() {
+	gulp.src(config.paths.fonts)
+		.pipe(gulp.dest(config.paths.dist + '/fonts'))
 		.pipe(connect.reload());
 });
 
@@ -89,4 +96,4 @@ gulp.task('watch', function() {
 	gulp.watch(config.paths.css, ['css']);
 });
 
-gulp.task('default', ['html', 'js', 'css', 'images', 'lint', 'open', 'watch']);
+gulp.task('default', ['html', 'js', 'fonts', 'css', 'images', 'lint', 'open', 'watch']);

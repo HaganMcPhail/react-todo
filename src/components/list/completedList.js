@@ -10,11 +10,7 @@ var CompletedList = React.createClass({
 	render: function() {
 		return (
 			<div>
-				{
-		          this.state.todoItems.map(function(item) {
-		            return <div className="item" key={item}>{item}</div>
-		          })
-			    }  
+				test
 			</div>
 		);
 	}
