@@ -31982,7 +31982,7 @@ var App = React.createClass({displayName: "App",
 		return (
 			React.createElement("div", null, 
 				React.createElement(Header, null), 
-				React.createElement("div", {className: "container-fluid"}, 
+				React.createElement("div", {className: "content list"}, 
 					React.createElement(RouteHandler, null)
 				)
 			)
@@ -32002,18 +32002,10 @@ var Link = Router.Link;
 var Header = React.createClass({displayName: "Header",
 	render: function() {
 		return (
-			// <nav className="navbar navbar-default">
-			// 	<div className="container-fluid">
-			// 		<Link to="app" className="navbar-brand">
-			// 			<img src="images/pluralsight-logo.png" />
-			// 		</Link>
-			// 		<ul className="nav navbar-nav">
-			// 			<li><Link to="app">Home</Link></li>
-			// 		</ul>
-			// 	</div>
-			// </nav>
-			React.createElement("div", {className: "text-center"}, 
-				React.createElement("div", {className: "head"}, "the list")
+			React.createElement("div", null, 
+				React.createElement("div", {className: "text-center"}, 
+					React.createElement("div", {className: "head"}, "the list")
+				)
 			)
 		);
 	}
@@ -32026,39 +32018,42 @@ module.exports = Header;
 
 var React = require('react');
 var Router = require('react-router');
-var List = require('./list/todoList');
+var Input = require('./input');
+var TodoList = require('./list/todoList');
 var Link = Router.Link;
 
 var Home = React.createClass({displayName: "Home",
 	getInitialState: function() {
 		return {
 			todoItems: [],
-			completedItems: []
+			completedItems: [],
+			count: 1
 		};
 	},
 
     handleSubmit: function(e) {
-        var toDoItem = event.target.value;
-        if( e.keyCode == 13 ) {
-            var list = this.state.todoItems;
-            list.push(toDoItem);
-            this.setState({todoItems: list});
-            event.target.value = '';
-            console.log(this.state.todoItems);
-        }
-
+	    var newItem = {id: this.state.count, value: event.target.value};
+	    if( e.keyCode == 13 ) {
+	        var list = this.state.todoItems;
+	        list.push(newItem);
+	        this.setState({todoItems: list, count: this.state.count + 1});
+	        event.target.value = '';
+	        console.log(this.state.todoItems);
+	    }
     },
 
 	render: function() {
+		var list;
+
 		return (
-			React.createElement("div", {className: "content"}, 
+			React.createElement("div", null, 
 				React.createElement("input", {
 					name: "add-todo", 
 					className: "text-box", 
 					placeholder: "What needs to be done?", 
 					value: this.value, 
 					onKeyDown: this.handleSubmit}), 
-				React.createElement(List, {items: this.state.todoItems})
+				React.createElement(TodoList, {items: this.state.todoItems})
 			)
 		);
 	}
@@ -32066,20 +32061,44 @@ var Home = React.createClass({displayName: "Home",
 
 module.exports = Home;
 
-},{"./list/todoList":200,"react":196,"react-router":27}],200:[function(require,module,exports){
+},{"./input":200,"./list/todoList":202,"react":196,"react-router":27}],200:[function(require,module,exports){
+// "use strict";
+
+// var React = require('react');
+// var Router = require('react-router');
+// var Link = Router.Link;
+
+// var Input = React.createClass({
+// 	render: function() {
+// 		var list;
+
+// 		return (
+// 			<input
+// 				name="add-todo"
+// 				className="text-box"
+// 				placeholder="What needs to be done?"
+// 				value={this.value} />
+// 		);
+// 	}
+// });
+
+// module.exports = Input;
+
+},{}],201:[function(require,module,exports){
 "use strict";
 
 var React = require('react');
 var Router = require('react-router');
+var Input = require('../input');
 var Link = Router.Link;
 
-var List = React.createClass({displayName: "List",
+var CompletedList = React.createClass({displayName: "CompletedList",
 
 	render: function() {
 		return (
 			React.createElement("div", null, 
 				
-		          this.props.items.map(function(item) {
+		          this.state.todoItems.map(function(item) {
 		            return React.createElement("div", {className: "item", key: item}, item)
 		          })
 			    
@@ -32088,9 +32107,35 @@ var List = React.createClass({displayName: "List",
 	}
 });
 
-module.exports = List;
+module.exports = CompletedList;
 
-},{"react":196,"react-router":27}],201:[function(require,module,exports){
+},{"../input":200,"react":196,"react-router":27}],202:[function(require,module,exports){
+"use strict";
+
+var React = require('react');
+var Router = require('react-router');
+var Input = require('../input');
+var Link = Router.Link;
+
+var TodoList = React.createClass({displayName: "TodoList",
+
+	render: function() {
+		//console.log(this.state.todoItems);
+		return (
+			React.createElement("div", null, 
+				
+		          this.props.items.map(function(item) {
+		            return React.createElement("div", {className: "item", key: item.id}, item.value)
+		          })
+			    
+			)
+		);
+	}
+});
+
+module.exports = TodoList;
+
+},{"../input":200,"react":196,"react-router":27}],203:[function(require,module,exports){
 "use strict";
 
 var React = require('react');
@@ -32110,7 +32155,7 @@ var NotFoundPage = React.createClass({displayName: "NotFoundPage",
 
 module.exports = NotFoundPage;
 
-},{"react":196,"react-router":27}],202:[function(require,module,exports){
+},{"react":196,"react-router":27}],204:[function(require,module,exports){
 "use strict";
 
 var React = require('react');
@@ -32121,7 +32166,7 @@ Router.run(routes, function(Handler) {
 	React.render(React.createElement(Handler, null), document.getElementById('app'));
 }); 
 
-},{"./routes":203,"react":196,"react-router":27}],203:[function(require,module,exports){
+},{"./routes":205,"react":196,"react-router":27}],205:[function(require,module,exports){
 "use strict";
 
 var React = require('react');
@@ -32135,10 +32180,11 @@ var Redirect = Router.Redirect;
 var routes = (
 	React.createElement(Route, {name: "app", path: "/", handler: require('./components/app')}, 
 		React.createElement(DefaultRoute, {handler: require('./components/homePage')}), 
-		React.createElement(NotFoundRoute, {handler: require('./components/notFoundPage')})
+		React.createElement(Route, {name: "completed", handler: require('./components/list/completedList')}), 
+		"// ", React.createElement(NotFoundRoute, {handler: require('./components/notFoundPage')})
 	)
 );
 
 module.exports = routes;
 
-},{"./components/app":197,"./components/homePage":199,"./components/notFoundPage":201,"react":196,"react-router":27}]},{},[202]);
+},{"./components/app":197,"./components/homePage":199,"./components/list/completedList":201,"./components/notFoundPage":203,"react":196,"react-router":27}]},{},[204]);
