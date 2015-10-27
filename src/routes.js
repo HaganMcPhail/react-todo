@@ -10,8 +10,9 @@ var Redirect = Router.Redirect;
 
 var routes = (
 	<Route name="app" path="/" handler={require('./components/app')}>
-		<DefaultRoute handler={require('./components/homePage')} />
+		<DefaultRoute handler={require('./components/list/todoList')} />
 		<Route name="completed" handler={require('./components/list/completedList')} />
+		<Route name="todo" handler={require('./components/list/todoList')} />
 		// <NotFoundRoute handler={require('./components/notFoundPage')} />
 	</Route>
 );

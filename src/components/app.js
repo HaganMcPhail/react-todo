@@ -2,6 +2,7 @@
 
 var React = require('react');
 var Header = require('./common/header');
+var Home = require('./homePage');
 var RouteHandler = require('react-router').RouteHandler;
 $ = jQuery = require('jquery');
 
@@ -11,7 +12,7 @@ var App = React.createClass({
 			<div>
 				<Header />
 				<div className="content list">
-					<RouteHandler />
+					<Home />
 				</div>
 			</div>
 		);
