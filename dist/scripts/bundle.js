@@ -44425,16 +44425,81 @@ var Home = React.createClass({displayName: "Home",
 		};
 	},
 
-	deleteItem: function(item) {
-		var listToRemoveFrom = this.props.todoList;
-		this.removeItemFromList(item, listToRemoveFrom);
+	//reusable remove and add functions
+	// *****************************************************************************************************************/
+	removeItemFromList: function(itemToRemove, listToRemoveFrom, list) {
+		for(var i = 0; i < listToRemoveFrom.length; i++) {
+		    var obj = listToRemoveFrom[i];
+
+		    if(itemToRemove.id == obj.id) {
+		        listToRemoveFrom.splice(i, 1);
+		        i--;
+		        if (list === 'todo') {
+					listToRemoveFrom = this.state.todoItems;
+					this.setState({todoItems: listToRemoveFrom});
+				} else {
+					listToRemoveFrom = this.state.completedItems;
+					this.setState({completedItems: listToRemoveFrom});
+				}
+		    }
+		}
 	},
 
-	deleteAllHandler: function(item, listToRemoveFrom) {
-		console.log('remove all items');
-		this.setState({todoItems: []});
-		console.log(this.state);
+	addItemToList: function(itemToAdd, listToAddTo, list) {
+		listToAddTo.push(itemToAdd);
+		if (list === 'todo') {
+			this.setState({todoItems: listToAddTo});
+		} else {
+			this.setState({completedItems: listToAddTo});
+		}
 	},
+
+	// *****************************************************************************************************************/
+	// Deletle Functions
+	// *****************************************************************************************************************/
+
+	deleteItemHandler: function(item, list) {
+		var listToRemoveFrom;
+		if (list === 'todo') {
+			listToRemoveFrom = this.state.todoItems;
+		} else {
+			listToRemoveFrom = this.state.completedItems;
+		}
+
+		this.removeItemFromList(item, listToRemoveFrom, list);
+	},
+
+	deleteAllHandler: function(list) {
+		if (list === 'todo') {
+			this.setState({todoItems: []});
+		} else {
+			this.setState({completedItems: []});
+		}
+	},
+
+	// *****************************************************************************************************************/
+	// mark items as todo/complete
+	// *****************************************************************************************************************/
+
+	markItemCompletedHandler: function(item) {
+		var listToRemoveFrom = this.state.todoItems,
+			listToAddTo = this.state.completedItems;
+
+		this.removeItemFromList(item, listToRemoveFrom, 'todo');
+		this.addItemToList(item, listToAddTo, 'completed');
+	},
+
+	markItemTodoHandler: function(item) {
+		var listToAddTo = this.state.todoItems,
+			listToRemoveFrom = this.state.completedItems;
+
+		this.removeItemFromList(item, listToRemoveFrom, 'completed');
+		this.addItemToList(item, listToAddTo, 'todo');
+	},
+
+	// *****************************************************************************************************************/
+	// handle text to add to the todo list
+	// *****************************************************************************************************************/
 
 	handleSubmit: function(e) {
 	    var newItem = {id: this.state.count, value: event.target.value};
@@ -44461,7 +44526,9 @@ var Home = React.createClass({displayName: "Home",
 				React.createElement(RouteHandler, {todoList: this.state.todoItems, 
 						  completedList: this.state.completedItems, 
 						  onDeleteAll: this.deleteAllHandler, 
-						  onDelete: this.deleteItem})
+						  onDeleteItem: this.deleteItemHandler, 
+						  onMarkCompleted: this.markItemCompletedHandler, 
+						  onMarkTodo: this.markItemTodoHandler})
 				
 			)
 		);
@@ -44502,37 +44569,7 @@ var Router = require('react-router');
 var Link = Router.Link;
 
 var CompletedList = React.createClass({displayName: "CompletedList",
-	addItemToList: function(itemToAdd, listToAddTo) {
-		listToAddTo.push(itemToAdd);
-		this.setState({todoItems: listToAddTo});
-		//console.log(this.state.completedItems);
-	},
-
-	removeItemFromList: function(itemToRemove, listToRemoveFrom) {
-		for(var i = 0; i < listToRemoveFrom.length; i++) {
-		    var obj = listToRemoveFrom[i];
-
-		    if(itemToRemove.id == obj.id) {
-		        listToRemoveFrom.splice(i, 1);
-		        i--;
-		        this.setState({completedItems: listToRemoveFrom});
-		    }
-		}
-	},
-
-	markItemTodo: function(item) {
-		var listToAddTo = this.props.todoList,
-			listToRemoveFrom = this.props.completedList;
-
-		this.removeItemFromList(item, listToRemoveFrom);
-		this.addItemToList(item, listToAddTo);
-	},
 	
-	deleteItem: function(item) {
-		var listToRemoveFrom = this.props.completedList;
-		this.removeItemFromList(item, listToRemoveFrom);
-	},
-
 	render: function() {
 		var self = this;
 		return (
@@ -44542,18 +44579,16 @@ var CompletedList = React.createClass({displayName: "CompletedList",
 		            return (
 		            	React.createElement("div", {className: "item", key: item.id}, 
 		            		React.createElement("span", {className: "glyphicon glyphicon-plus check", 
-		            			onClick: self.markItemTodo.bind(self, item)}), 
+		            			onClick: self.props.onMarkTodo.bind(self, item)}), 
 		            		React.createElement("span", {className: "itemValue"}, item.value), 
-		            		React.createElement("span", {className: "glyphicon glyphicon-trash delete", onClick: self.deleteItem.bind(self, item)})
+		            		React.createElement("span", {className: "glyphicon glyphicon-trash delete", onClick: self.props.onDeleteItem.bind(null, item, 'completed')})
 		            	)
 		            )
 		          }), 
 			    
 			    React.createElement("div", {className: "item"}, 
-            		React.createElement("span", {className: "glyphicon glyphicon-ok check", 
-            			onClick: self.markAllItemsCompleted}), 
-            		React.createElement("span", {className: "itemValue"}, React.createElement("span", {className: "all-items"}, "All Items")), 
-            		React.createElement("span", {className: "glyphicon glyphicon-remove delete", onClick: self.deleteAllItems})
+            		React.createElement("span", {className: "itemValue"}, React.createElement("span", {className: "all-items"})), 
+            		React.createElement("span", {title: "delete all completed items", className: "glyphicon glyphicon-remove delete", onClick: self.props.onDeleteAll.bind(null, 'completed')})
             	)
 			)
 		);
@@ -44572,52 +44607,6 @@ var Link = Router.Link;
 
 var TodoList = React.createClass({displayName: "TodoList",
 
-	addItemToList: function(itemToAdd, listToAddTo) {
-		listToAddTo.push(itemToAdd);
-		this.setState({completedItems: listToAddTo});
-		//console.log(this.state.completedItems);
-	},
-
-	removeItemFromList: function(itemToRemove, listToRemoveFrom) {
-		if(itemToRemove === 'all') {
-			// listToRemoveFrom = [];
-			console.log(this.state.todoItems);
-			this.setState({todoItems: []});
-			console.log(this.state.todoItems);
-		} else {
-			console.log(this.state);
-			for(var i = 0; i < listToRemoveFrom.length; i++) {
-			    var obj = listToRemoveFrom[i];
-
-			    if(itemToRemove.id == obj.id) {
-			        listToRemoveFrom.splice(i, 1);
-			        i--;
-			        this.setState({todoItems: listToRemoveFrom});
-			    }
-			}
-		}
-	},
-
-	markItemCompleted: function(item) {
-		var listToRemoveFrom = this.props.todoList,
-			listToAddTo = this.props.completedList;
-
-		this.removeItemFromList(item, listToRemoveFrom);
-		this.addItemToList(item, listToAddTo);
-		console.log(this.state);
-	},
-	
-	deleteItem: function(item) {
-		var listToRemoveFrom = this.props.todoList;
-		this.removeItemFromList(item, listToRemoveFrom);
-	},
-
-	deleteAllItems: function(item, listToRemoveFrom) {
-		console.log('remove all items');
-		this.setState({todoItems: []});
-		console.log(this.state);
-	},
-
 	render: function() {
 		var self = this;
 		return (
@@ -44627,18 +44616,16 @@ var TodoList = React.createClass({displayName: "TodoList",
 		            return (
 		            	React.createElement("div", {className: "item", key: item.id}, 
 		            		React.createElement("span", {className: "glyphicon glyphicon-check check", 
-		            			onClick: self.markItemCompleted.bind(self, item)}), 
+		            			onClick: self.props.onMarkCompleted.bind(self, item)}), 
 		            		React.createElement("span", {className: "itemValue"}, item.value), 
-		            		React.createElement("span", {className: "glyphicon glyphicon-trash delete", onClick: self.deleteItem.bind(self, item)})
+		            		React.createElement("span", {className: "glyphicon glyphicon-trash delete", onClick: self.props.onDeleteItem.bind(null, item, 'todo')})
 		            	)
 		            )
 		          }), 
 			    
 			    React.createElement("div", {className: "item"}, 
-            		React.createElement("span", {className: "glyphicon glyphicon-ok check", 
-            			onClick: self.markAllItemsCompleted}), 
-            		React.createElement("span", {className: "itemValue"}, React.createElement("span", {className: "all-items"}, "All Items")), 
-            		React.createElement("span", {className: "glyphicon glyphicon-remove delete", onClick: self.deleteAllItems})
+            		React.createElement("span", {className: "itemValue"}, React.createElement("span", {className: "all-items"})), 
+            		React.createElement("span", {title: "delete all todo items", className: "glyphicon glyphicon-remove delete", onClick: this.props.onDeleteAll.bind(null, 'todo')})
             	)
 			)
 		);

@@ -21,16 +21,81 @@ var Home = React.createClass({
 		};
 	},
 
-	deleteItem: function(item) {
-		var listToRemoveFrom = this.props.todoList;
-		this.removeItemFromList(item, listToRemoveFrom);
+	//reusable remove and add functions
+	// *****************************************************************************************************************/
+	removeItemFromList: function(itemToRemove, listToRemoveFrom, list) {
+		for(var i = 0; i < listToRemoveFrom.length; i++) {
+		    var obj = listToRemoveFrom[i];
+
+		    if(itemToRemove.id == obj.id) {
+		        listToRemoveFrom.splice(i, 1);
+		        i--;
+		        if (list === 'todo') {
+					listToRemoveFrom = this.state.todoItems;
+					this.setState({todoItems: listToRemoveFrom});
+				} else {
+					listToRemoveFrom = this.state.completedItems;
+					this.setState({completedItems: listToRemoveFrom});
+				}
+		    }
+		}
 	},
 
-	deleteAllHandler: function(item, listToRemoveFrom) {
-		console.log('remove all items');
-		this.setState({todoItems: []});
-		console.log(this.state);
+	addItemToList: function(itemToAdd, listToAddTo, list) {
+		listToAddTo.push(itemToAdd);
+		if (list === 'todo') {
+			this.setState({todoItems: listToAddTo});
+		} else {
+			this.setState({completedItems: listToAddTo});
+		}
 	},
+
+	// *****************************************************************************************************************/
+	// Deletle Functions
+	// *****************************************************************************************************************/
+
+	deleteItemHandler: function(item, list) {
+		var listToRemoveFrom;
+		if (list === 'todo') {
+			listToRemoveFrom = this.state.todoItems;
+		} else {
+			listToRemoveFrom = this.state.completedItems;
+		}
+
+		this.removeItemFromList(item, listToRemoveFrom, list);
+	},
+
+	deleteAllHandler: function(list) {
+		if (list === 'todo') {
+			this.setState({todoItems: []});
+		} else {
+			this.setState({completedItems: []});
+		}
+	},
+
+	// *****************************************************************************************************************/
+	// mark items as todo/complete
+	// *****************************************************************************************************************/
+
+	markItemCompletedHandler: function(item) {
+		var listToRemoveFrom = this.state.todoItems,
+			listToAddTo = this.state.completedItems;
+
+		this.removeItemFromList(item, listToRemoveFrom, 'todo');
+		this.addItemToList(item, listToAddTo, 'completed');
+	},
+
+	markItemTodoHandler: function(item) {
+		var listToAddTo = this.state.todoItems,
+			listToRemoveFrom = this.state.completedItems;
+
+		this.removeItemFromList(item, listToRemoveFrom, 'completed');
+		this.addItemToList(item, listToAddTo, 'todo');
+	},
+
+	// *****************************************************************************************************************/
+	// handle text to add to the todo list
+	// *****************************************************************************************************************/
 
 	handleSubmit: function(e) {
 	    var newItem = {id: this.state.count, value: event.target.value};
@@ -57,7 +122,9 @@ var Home = React.createClass({
 				<RouteHandler todoList={this.state.todoItems} 
 						  completedList={this.state.completedItems}
 						  onDeleteAll={this.deleteAllHandler}
-						  onDelete={this.deleteItem} />
+						  onDeleteItem={this.deleteItemHandler}
+						  onMarkCompleted={this.markItemCompletedHandler}
+						  onMarkTodo={this.markItemTodoHandler} />
 				
 			</div>
 		);
