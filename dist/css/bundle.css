@@ -23,7 +23,7 @@ html, body{
 	letter-spacing: 2px;
 	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 	font-weight: 100;
-	opacity: .5;
+	opacity: .6;
 }
 
 .content{
@@ -78,4 +78,24 @@ html, body{
 .delete:hover{
 	opacity: .8;
 }
-.test{display: none;}
+footer{
+	padding:15px 0;
+}
+.pagesBtn{
+	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	font-weight: 200;
+	font-size: 18px;
+	margin:0px 5px;
+	padding:8px 15px;
+	color: #777;
+	letter-spacing: 2px;
+	outline: none;
+}
+
+.pagesBtn:hover, .pagesBtn:focus, .pagesBtn:active{
+	color: #777;
+	outline: none !important;
+}
+.all-items{
+	color:rgba(0,0,0,0.3);
+}

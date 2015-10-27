@@ -6,6 +6,7 @@ var Router = require('react-router');
 var Link = Router.Link;
 
 var TodoList = React.createClass({
+
 	addItemToList: function(itemToAdd, listToAddTo) {
 		listToAddTo.push(itemToAdd);
 		this.setState({completedItems: listToAddTo});
@@ -13,14 +14,22 @@ var TodoList = React.createClass({
 	},
 
 	removeItemFromList: function(itemToRemove, listToRemoveFrom) {
-		for(var i = 0; i < listToRemoveFrom.length; i++) {
-		    var obj = listToRemoveFrom[i];
+		if(itemToRemove === 'all') {
+			// listToRemoveFrom = [];
+			console.log(this.state.todoItems);
+			this.setState({todoItems: []});
+			console.log(this.state.todoItems);
+		} else {
+			console.log(this.state);
+			for(var i = 0; i < listToRemoveFrom.length; i++) {
+			    var obj = listToRemoveFrom[i];
 
-		    if(itemToRemove.id == obj.id) {
-		        listToRemoveFrom.splice(i, 1);
-		        i--;
-		        this.setState({todoItems: listToRemoveFrom});
-		    }
+			    if(itemToRemove.id == obj.id) {
+			        listToRemoveFrom.splice(i, 1);
+			        i--;
+			        this.setState({todoItems: listToRemoveFrom});
+			    }
+			}
 		}
 	},
 
@@ -34,9 +43,14 @@ var TodoList = React.createClass({
 	},
 	
 	deleteItem: function(item) {
-		console.log(this.state.count);
 		var listToRemoveFrom = this.props.todoList;
 		this.removeItemFromList(item, listToRemoveFrom);
+	},
+
+	deleteAllItems: function(item, listToRemoveFrom) {
+		console.log('remove all items');
+		this.setState({todoItems: []});
+		console.log(this.state);
 	},
 
 	render: function() {
@@ -47,14 +61,20 @@ var TodoList = React.createClass({
 		          this.props.todoList.map(function(item, i) {
 		            return (
 		            	<div className="item" key={item.id}>
-		            		<span className="glyphicon glyphicon-ok check"
+		            		<span className="glyphicon glyphicon-check check"
 		            			onClick={self.markItemCompleted.bind(self, item)}></span>
-		            		<span className="itemValue">{item.id} {item.value}</span>
+		            		<span className="itemValue">{item.value}</span>
 		            		<span className="glyphicon glyphicon-trash delete" onClick={self.deleteItem.bind(self, item)}></span>
 		            	</div>
 		            )
 		          })
 			    }
+			    <div className="item">
+            		<span className="glyphicon glyphicon-ok check"
+            			onClick={self.markAllItemsCompleted}></span>
+            		<span className="itemValue"><span className="all-items">All Items</span></span>
+            		<span className="glyphicon glyphicon-remove delete" onClick={self.deleteAllItems}></span>
+            	</div>
 			</div>
 		);
 	}

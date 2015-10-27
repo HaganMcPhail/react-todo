@@ -9,12 +9,27 @@ var CompletedList = require('./list/completedList');
 var Link = Router.Link;
 
 var Home = React.createClass({
+	mixins: [
+		Router.Navigation
+	],
+
 	getInitialState: function() {
 		return {
 			todoItems: [],
 			completedItems: [],
 			count: 0
 		};
+	},
+
+	deleteItem: function(item) {
+		var listToRemoveFrom = this.props.todoList;
+		this.removeItemFromList(item, listToRemoveFrom);
+	},
+
+	deleteAllHandler: function(item, listToRemoveFrom) {
+		console.log('remove all items');
+		this.setState({todoItems: []});
+		console.log(this.state);
 	},
 
 	handleSubmit: function(e) {
@@ -24,7 +39,7 @@ var Home = React.createClass({
 	        list.push(newItem);
 	        this.setState({todoItems: list, count: this.state.count + 1});
 	        event.target.value = '';
-	        console.log(this.state.todoItems);
+	        this.transitionTo('todo');
 	    }
     },
 
@@ -40,7 +55,9 @@ var Home = React.createClass({
 					onKeyDown={this.handleSubmit} />
 
 				<RouteHandler todoList={this.state.todoItems} 
-						  completedList={this.state.completedItems} />
+						  completedList={this.state.completedItems}
+						  onDeleteAll={this.deleteAllHandler}
+						  onDelete={this.deleteItem} />
 				
 			</div>
 		);

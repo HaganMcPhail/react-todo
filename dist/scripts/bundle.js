@@ -44329,6 +44329,7 @@ module.exports = require('./lib/React');
 
 var React = require('react');
 var Header = require('./common/header');
+var Footer = require('./common/footer');
 var Home = require('./homePage');
 var RouteHandler = require('react-router').RouteHandler;
 $ = jQuery = require('jquery');
@@ -44340,7 +44341,8 @@ var App = React.createClass({displayName: "App",
 				React.createElement(Header, null), 
 				React.createElement("div", {className: "content list"}, 
 					React.createElement(Home, null)
-				)
+				), 
+				React.createElement(Footer, null)
 			)
 		);
 	}
@@ -44348,7 +44350,37 @@ var App = React.createClass({displayName: "App",
 
 module.exports = App;
 
-},{"./common/header":199,"./homePage":200,"jquery":2,"react":197,"react-router":28}],199:[function(require,module,exports){
+},{"./common/footer":199,"./common/header":200,"./homePage":201,"jquery":2,"react":197,"react-router":28}],199:[function(require,module,exports){
+"use strict";
+
+var React = require('react');
+var Router = require('react-router');
+var Link = Router.Link;
+
+var Footer = React.createClass({displayName: "Footer",
+	render: function() {
+		return (
+			React.createElement("footer", null, 
+				React.createElement("div", {className: "text-center"}, 
+					React.createElement(Link, {to: "todo"}, 
+						React.createElement("button", {className: "btn btn-default pagesBtn"}, 
+							"ToDo"
+						)
+					), 
+					React.createElement(Link, {to: "completed"}, 
+						React.createElement("button", {className: "btn btn-default pagesBtn"}, 
+							"Completed"
+						)
+					)
+				)
+			)
+		);
+	}
+});
+
+module.exports = Footer;
+
+},{"react":197,"react-router":28}],200:[function(require,module,exports){
 "use strict";
 
 var React = require('react');
@@ -44369,7 +44401,7 @@ var Header = React.createClass({displayName: "Header",
 
 module.exports = Header;
 
-},{"react":197,"react-router":28}],200:[function(require,module,exports){
+},{"react":197,"react-router":28}],201:[function(require,module,exports){
 "use strict";
 
 var React = require('react');
@@ -44381,12 +44413,27 @@ var CompletedList = require('./list/completedList');
 var Link = Router.Link;
 
 var Home = React.createClass({displayName: "Home",
+	mixins: [
+		Router.Navigation
+	],
+
 	getInitialState: function() {
 		return {
 			todoItems: [],
 			completedItems: [],
 			count: 0
 		};
+	},
+
+	deleteItem: function(item) {
+		var listToRemoveFrom = this.props.todoList;
+		this.removeItemFromList(item, listToRemoveFrom);
+	},
+
+	deleteAllHandler: function(item, listToRemoveFrom) {
+		console.log('remove all items');
+		this.setState({todoItems: []});
+		console.log(this.state);
 	},
 
 	handleSubmit: function(e) {
@@ -44396,7 +44443,7 @@ var Home = React.createClass({displayName: "Home",
 	        list.push(newItem);
 	        this.setState({todoItems: list, count: this.state.count + 1});
 	        event.target.value = '';
-	        console.log(this.state.todoItems);
+	        this.transitionTo('todo');
 	    }
     },
 
@@ -44412,7 +44459,9 @@ var Home = React.createClass({displayName: "Home",
 					onKeyDown: this.handleSubmit}), 
 
 				React.createElement(RouteHandler, {todoList: this.state.todoItems, 
-						  completedList: this.state.completedItems})
+						  completedList: this.state.completedItems, 
+						  onDeleteAll: this.deleteAllHandler, 
+						  onDelete: this.deleteItem})
 				
 			)
 		);
@@ -44421,7 +44470,7 @@ var Home = React.createClass({displayName: "Home",
 
 module.exports = Home;
 
-},{"./input":201,"./list/completedList":202,"./list/todoList":203,"react":197,"react-router":28}],201:[function(require,module,exports){
+},{"./input":202,"./list/completedList":203,"./list/todoList":204,"react":197,"react-router":28}],202:[function(require,module,exports){
 // "use strict";
 
 // var React = require('react');
@@ -44444,7 +44493,7 @@ module.exports = Home;
 
 // module.exports = Input;
 
-},{}],202:[function(require,module,exports){
+},{}],203:[function(require,module,exports){
 "use strict";
 
 var React = require('react');
@@ -44477,7 +44526,6 @@ var CompletedList = React.createClass({displayName: "CompletedList",
 
 		this.removeItemFromList(item, listToRemoveFrom);
 		this.addItemToList(item, listToAddTo);
-		console.log(this.state);
 	},
 	
 	deleteItem: function(item) {
@@ -44495,12 +44543,18 @@ var CompletedList = React.createClass({displayName: "CompletedList",
 		            	React.createElement("div", {className: "item", key: item.id}, 
 		            		React.createElement("span", {className: "glyphicon glyphicon-plus check", 
 		            			onClick: self.markItemTodo.bind(self, item)}), 
-		            		React.createElement("span", {className: "itemValue"}, item.id, " ", item.value), 
+		            		React.createElement("span", {className: "itemValue"}, item.value), 
 		            		React.createElement("span", {className: "glyphicon glyphicon-trash delete", onClick: self.deleteItem.bind(self, item)})
 		            	)
 		            )
-		          })
+		          }), 
 			    
+			    React.createElement("div", {className: "item"}, 
+            		React.createElement("span", {className: "glyphicon glyphicon-ok check", 
+            			onClick: self.markAllItemsCompleted}), 
+            		React.createElement("span", {className: "itemValue"}, React.createElement("span", {className: "all-items"}, "All Items")), 
+            		React.createElement("span", {className: "glyphicon glyphicon-remove delete", onClick: self.deleteAllItems})
+            	)
 			)
 		);
 	}
@@ -44508,7 +44562,7 @@ var CompletedList = React.createClass({displayName: "CompletedList",
 
 module.exports = CompletedList;
 
-},{"lodash":3,"react":197,"react-router":28}],203:[function(require,module,exports){
+},{"lodash":3,"react":197,"react-router":28}],204:[function(require,module,exports){
 "use strict";
 
 var React = require('react');
@@ -44517,6 +44571,7 @@ var Router = require('react-router');
 var Link = Router.Link;
 
 var TodoList = React.createClass({displayName: "TodoList",
+
 	addItemToList: function(itemToAdd, listToAddTo) {
 		listToAddTo.push(itemToAdd);
 		this.setState({completedItems: listToAddTo});
@@ -44524,14 +44579,22 @@ var TodoList = React.createClass({displayName: "TodoList",
 	},
 
 	removeItemFromList: function(itemToRemove, listToRemoveFrom) {
-		for(var i = 0; i < listToRemoveFrom.length; i++) {
-		    var obj = listToRemoveFrom[i];
+		if(itemToRemove === 'all') {
+			// listToRemoveFrom = [];
+			console.log(this.state.todoItems);
+			this.setState({todoItems: []});
+			console.log(this.state.todoItems);
+		} else {
+			console.log(this.state);
+			for(var i = 0; i < listToRemoveFrom.length; i++) {
+			    var obj = listToRemoveFrom[i];
 
-		    if(itemToRemove.id == obj.id) {
-		        listToRemoveFrom.splice(i, 1);
-		        i--;
-		        this.setState({todoItems: listToRemoveFrom});
-		    }
+			    if(itemToRemove.id == obj.id) {
+			        listToRemoveFrom.splice(i, 1);
+			        i--;
+			        this.setState({todoItems: listToRemoveFrom});
+			    }
+			}
 		}
 	},
 
@@ -44545,9 +44608,14 @@ var TodoList = React.createClass({displayName: "TodoList",
 	},
 	
 	deleteItem: function(item) {
-		console.log(this.state.count);
 		var listToRemoveFrom = this.props.todoList;
 		this.removeItemFromList(item, listToRemoveFrom);
+	},
+
+	deleteAllItems: function(item, listToRemoveFrom) {
+		console.log('remove all items');
+		this.setState({todoItems: []});
+		console.log(this.state);
 	},
 
 	render: function() {
@@ -44558,14 +44626,20 @@ var TodoList = React.createClass({displayName: "TodoList",
 		          this.props.todoList.map(function(item, i) {
 		            return (
 		            	React.createElement("div", {className: "item", key: item.id}, 
-		            		React.createElement("span", {className: "glyphicon glyphicon-ok check", 
+		            		React.createElement("span", {className: "glyphicon glyphicon-check check", 
 		            			onClick: self.markItemCompleted.bind(self, item)}), 
-		            		React.createElement("span", {className: "itemValue"}, item.id, " ", item.value), 
+		            		React.createElement("span", {className: "itemValue"}, item.value), 
 		            		React.createElement("span", {className: "glyphicon glyphicon-trash delete", onClick: self.deleteItem.bind(self, item)})
 		            	)
 		            )
-		          })
+		          }), 
 			    
+			    React.createElement("div", {className: "item"}, 
+            		React.createElement("span", {className: "glyphicon glyphicon-ok check", 
+            			onClick: self.markAllItemsCompleted}), 
+            		React.createElement("span", {className: "itemValue"}, React.createElement("span", {className: "all-items"}, "All Items")), 
+            		React.createElement("span", {className: "glyphicon glyphicon-remove delete", onClick: self.deleteAllItems})
+            	)
 			)
 		);
 	}
@@ -44573,7 +44647,7 @@ var TodoList = React.createClass({displayName: "TodoList",
 
 module.exports = TodoList;
 
-},{"lodash":3,"react":197,"react-router":28}],204:[function(require,module,exports){
+},{"lodash":3,"react":197,"react-router":28}],205:[function(require,module,exports){
 "use strict";
 
 var React = require('react');
@@ -44593,7 +44667,7 @@ var NotFoundPage = React.createClass({displayName: "NotFoundPage",
 
 module.exports = NotFoundPage;
 
-},{"react":197,"react-router":28}],205:[function(require,module,exports){
+},{"react":197,"react-router":28}],206:[function(require,module,exports){
 "use strict";
 
 var React = require('react');
@@ -44604,7 +44678,7 @@ Router.run(routes, function(Handler) {
 	React.render(React.createElement(Handler, null), document.getElementById('app'));
 }); 
 
-},{"./routes":206,"react":197,"react-router":28}],206:[function(require,module,exports){
+},{"./routes":207,"react":197,"react-router":28}],207:[function(require,module,exports){
 "use strict";
 
 var React = require('react');
@@ -44626,4 +44700,4 @@ var routes = (
 
 module.exports = routes;
 
-},{"./components/app":198,"./components/list/completedList":202,"./components/list/todoList":203,"./components/notFoundPage":204,"react":197,"react-router":28}]},{},[205]);
+},{"./components/app":198,"./components/list/completedList":203,"./components/list/todoList":204,"./components/notFoundPage":205,"react":197,"react-router":28}]},{},[206]);

@@ -30,7 +30,6 @@ var CompletedList = React.createClass({
 
 		this.removeItemFromList(item, listToRemoveFrom);
 		this.addItemToList(item, listToAddTo);
-		console.log(this.state);
 	},
 	
 	deleteItem: function(item) {
@@ -48,12 +47,18 @@ var CompletedList = React.createClass({
 		            	<div className="item" key={item.id}>
 		            		<span className="glyphicon glyphicon-plus check"
 		            			onClick={self.markItemTodo.bind(self, item)}></span>
-		            		<span className="itemValue">{item.id} {item.value}</span>
+		            		<span className="itemValue">{item.value}</span>
 		            		<span className="glyphicon glyphicon-trash delete" onClick={self.deleteItem.bind(self, item)}></span>
 		            	</div>
 		            )
 		          })
 			    }
+			    <div className="item">
+            		<span className="glyphicon glyphicon-ok check"
+            			onClick={self.markAllItemsCompleted}></span>
+            		<span className="itemValue"><span className="all-items">All Items</span></span>
+            		<span className="glyphicon glyphicon-remove delete" onClick={self.deleteAllItems}></span>
+            	</div>
 			</div>
 		);
 	}
