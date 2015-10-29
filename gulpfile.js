@@ -30,6 +30,45 @@ var config = {
 	}
 }
 
+gulp.task('express', function() {
+	var fs = require('fs');
+	var path = require('path');
+	var express = require('express');
+	var bodyParser = require('body-parser');
+	var app = express();
+
+	var COMMENTS_FILE = path.join(__dirname, 'items.json');
+
+	app.set('port', (process.env.PORT || 9005));
+
+	app.use('/', express.static(path.join(__dirname, 'public')));
+	app.use(bodyParser.json());
+	app.use(bodyParser.urlencoded({extended: true}));
+
+	app.get('/api/comments', function(req, res) {
+	  fs.readFile(COMMENTS_FILE, function(err, data) {
+	    res.setHeader('Cache-Control', 'no-cache');
+	    res.json(JSON.parse(data));
+	  });
+	});
+
+	app.post('/api/comments', function(req, res) {
+	  fs.readFile(COMMENTS_FILE, function(err, data) {
+	    var comments = JSON.parse(data);
+	    comments.push(req.body);
+	    fs.writeFile(COMMENTS_FILE, JSON.stringify(comments, null, 4), function(err) {
+	      res.setHeader('Cache-Control', 'no-cache');
+	      res.json(comments);
+	    });
+	  });
+	});
+
+
+	app.listen(app.get('port'), function() {
+	  console.log('Server started: http://localhost:' + app.get('port') + '/');
+	});
+});
+
 //Start a local development server
 gulp.task('connect', function() {
 	connect.server({
@@ -38,11 +77,6 @@ gulp.task('connect', function() {
 		base: config.devBaseUrl,
 		livereload: true
 	});
-});
-
-gulp.task('open', ['connect'], function() {
-	gulp.src('dist/index.html')
-		.pipe(open({ uri: config.devBaseUrl + ':' + config.port + '/'}));
 });
 
 gulp.task('html', function() {
@@ -99,6 +133,11 @@ gulp.task('lint', function() {
 		.pipe(lint.format());
 });
 
+gulp.task('open', ['connect'], function() {
+	gulp.src('./dist/index.html')
+		.pipe(open({ uri: config.devBaseUrl + ':' + config.port + '/'}));
+});
+
 gulp.task('watch', function() {
 	gulp.watch(config.paths.html, ['html']);
 	gulp.watch(config.paths.js, ['js', 'lint']);
@@ -106,4 +145,4 @@ gulp.task('watch', function() {
 	gulp.watch(config.paths.sass, ['sass']);
 });
 
-gulp.task('default', ['html', 'js', 'fonts', 'sass', 'css', 'images', 'lint', 'open', 'watch']);
+gulp.task('default', ['html', 'js', 'watch', 'fonts', 'sass', 'css', 'images', 'lint', 'open', 'express']);

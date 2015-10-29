@@ -44419,10 +44419,30 @@ var Home = React.createClass({displayName: "Home",
 
 	getInitialState: function() {
 		return {
-			todoItems: [{id: 0, value: 'test'}],
+			todoItems: [],
 			completedItems: [],
 			count: 1
 		};
+	},
+
+	loadCommentsFromServer: function() {
+	    $.ajax({
+	      url: '/api/comments',
+	      dataType: 'json',
+	      cache: false,
+	      success: function(data) {
+	        this.setState({todoItems: data});
+	        console.log(this.state.todoItems);
+	      }.bind(this),
+	      error: function(xhr, status, err) {
+	        console.error('test ', status, err.toString());
+	      }.bind(this)
+	    });
+	},
+
+	componentDidMount: function() {
+	    this.loadCommentsFromServer();
+	    setInterval(this.loadCommentsFromServer, 10000);
 	},
 
 	//reusable remove and add functions
@@ -44547,7 +44567,7 @@ var Home = React.createClass({displayName: "Home",
 				    onMarkCompleted: this.markItemCompletedHandler, 
 				    onMarkTodo: this.markItemTodoHandler, 
 				    onEditItem: this.editItemHandler})
-				
+
 			)
 		);
 	}
