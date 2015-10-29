@@ -15,17 +15,17 @@ var CompletedList = React.createClass({
 		          this.props.completedList.map(function(item, i) {
 		            return (
 		            	<div className="item" key={item.id}>
-		            		<span className="glyphicon glyphicon-plus check"
+		            		<span className="glyphicon glyphicon-plus check icon"
 		            			onClick={self.props.onMarkTodo.bind(self, item)}></span>
 		            		<span className="itemValue">{item.value}</span>
-		            		<span className="glyphicon glyphicon-trash delete" onClick={self.props.onDeleteItem.bind(null, item, 'completed')}></span>
+		            		<span className="glyphicon glyphicon-trash delete icon" onClick={self.props.onDeleteItem.bind(null, item, 'completed')}></span>
 		            	</div>
 		            )
 		          })
 			    }
 			    <div className="item">
             		<span className="itemValue"><span className="all-items"></span></span>
-            		<span title="delete all completed items" className="glyphicon glyphicon-remove delete" onClick={self.props.onDeleteAll.bind(null, 'completed')}></span>
+            		<span title="delete all completed items" className="glyphicon glyphicon-remove delete icon" onClick={self.props.onDeleteAll.bind(null, 'completed')}></span>
             	</div>
 			</div>
 		);

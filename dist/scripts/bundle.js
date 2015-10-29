@@ -44596,17 +44596,17 @@ var CompletedList = React.createClass({displayName: "CompletedList",
 		          this.props.completedList.map(function(item, i) {
 		            return (
 		            	React.createElement("div", {className: "item", key: item.id}, 
-		            		React.createElement("span", {className: "glyphicon glyphicon-plus check", 
+		            		React.createElement("span", {className: "glyphicon glyphicon-plus check icon", 
 		            			onClick: self.props.onMarkTodo.bind(self, item)}), 
 		            		React.createElement("span", {className: "itemValue"}, item.value), 
-		            		React.createElement("span", {className: "glyphicon glyphicon-trash delete", onClick: self.props.onDeleteItem.bind(null, item, 'completed')})
+		            		React.createElement("span", {className: "glyphicon glyphicon-trash delete icon", onClick: self.props.onDeleteItem.bind(null, item, 'completed')})
 		            	)
 		            )
 		          }), 
 			    
 			    React.createElement("div", {className: "item"}, 
             		React.createElement("span", {className: "itemValue"}, React.createElement("span", {className: "all-items"})), 
-            		React.createElement("span", {title: "delete all completed items", className: "glyphicon glyphicon-remove delete", onClick: self.props.onDeleteAll.bind(null, 'completed')})
+            		React.createElement("span", {title: "delete all completed items", className: "glyphicon glyphicon-remove delete icon", onClick: self.props.onDeleteAll.bind(null, 'completed')})
             	)
 			)
 		);
@@ -44633,23 +44633,23 @@ var TodoList = React.createClass({displayName: "TodoList",
 		          this.props.todoList.map(function(item, i) {
 		            return (
 		            	React.createElement("div", {className: "item", key: item.id}, 
-		            		React.createElement("span", {className: "glyphicon glyphicon-check check", 
+		            		React.createElement("span", {className: "glyphicon glyphicon-check check icon", 
 		            			onClick: self.props.onMarkCompleted.bind(self, item)}), 
 		            		" ", 
-		            		React.createElement("span", {className: "glyphicon glyphicon-pencil pencil", 
+		            		React.createElement("span", {className: "glyphicon glyphicon-pencil pencil icon", 
 		            			onClick: self.props.onEditItem.bind(self, item)}), 
 		            		React.createElement("span", {className: "itemValue"}, 
 		            			React.createElement("span", {className: 'listItem ' + item.id}, item.value), 
 		            			React.createElement("input", {className: 'editText ' + item.id, onKeyDown: self.props.onEditItem, type: "text", placeholder: "Edit Item", style: {display: 'none'}, defaultValue: item.value})
 		            		), 
-		            		React.createElement("span", {className: "glyphicon glyphicon-trash delete", onClick: self.props.onDeleteItem.bind(null, item, 'todo')})
+		            		React.createElement("span", {className: "glyphicon glyphicon-trash delete icon", onClick: self.props.onDeleteItem.bind(null, item, 'todo')})
 		            	)
 		            )
 		          }), 
 			    
 			    React.createElement("div", {className: "item"}, 
             		React.createElement("span", {className: "itemValue"}, React.createElement("span", {className: "all-items"})), 
-            		React.createElement("span", {title: "delete all todo items", className: "glyphicon glyphicon-remove delete", onClick: this.props.onDeleteAll.bind(null, 'todo')})
+            		React.createElement("span", {title: "delete all todo items", className: "glyphicon glyphicon-remove delete icon", onClick: this.props.onDeleteAll.bind(null, 'todo')})
             	)
 			)
 		);

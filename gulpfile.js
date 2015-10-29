@@ -1,6 +1,7 @@
 "use strict";
 
 var gulp = require('gulp');
+var sass = require('gulp-sass');
 var connect = require('gulp-connect'); //Runs a local dev server
 var open = require('gulp-open'); //Open a URL in a web browser
 var browserify = require('browserify'); // Bundles JS
@@ -21,7 +22,8 @@ var config = {
       		'node_modules/bootstrap/dist/css/bootstrap.min.css',
       		'node_modules/bootstrap/dist/css/bootstrap-theme.min.css',
       		'node_modules/toastr/toastr.css',
-      		'./src/css/main.css'
+      		'./src/css/main.css',
+      		'./src/css/sass/*.scss'
     	],
 		dist: './dist',
 		mainJs: './src/main.js'
@@ -67,9 +69,16 @@ gulp.task('js', function() {
 
 gulp.task('css', function() {
 	gulp.src(config.paths.css)
+		.pipe(sass())
 		.pipe(concat('bundle.css'))
 		.pipe(gulp.dest(config.paths.dist + '/css'))
 		.pipe(connect.reload());
+});
+
+gulp.task('sass', function() {
+	gulp.src('./src/**/*.scss')
+	    .pipe(sass())
+	    .pipe(gulp.dest(config.paths.dist + '/css/'));
 });
 
 // Migrates images to dist folder
@@ -93,7 +102,8 @@ gulp.task('lint', function() {
 gulp.task('watch', function() {
 	gulp.watch(config.paths.html, ['html']);
 	gulp.watch(config.paths.js, ['js', 'lint']);
-	gulp.watch(config.paths.css, ['css']);
+	gulp.watch(config.paths.css, ['css', 'sass']);
+	gulp.watch(config.paths.sass, ['sass']);
 });
 
-gulp.task('default', ['html', 'js', 'fonts', 'css', 'images', 'lint', 'open', 'watch']);
+gulp.task('default', ['html', 'js', 'fonts', 'sass', 'css', 'images', 'lint', 'open', 'watch']);
