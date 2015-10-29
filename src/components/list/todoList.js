@@ -17,7 +17,13 @@ var TodoList = React.createClass({
 		            	<div className="item" key={item.id}>
 		            		<span className="glyphicon glyphicon-check check"
 		            			onClick={self.props.onMarkCompleted.bind(self, item)}></span>
-		            		<span className="itemValue">{item.value}</span>
+		            		&nbsp;
+		            		<span className="glyphicon glyphicon-pencil pencil"
+		            			onClick={self.props.onEditItem.bind(self, item)}></span>
+		            		<span className="itemValue">
+		            			<span className={'listItem ' + item.id}>{item.value}</span>
+		            			<input className={'editText ' + item.id} onKeyDown={self.props.onEditItem} type="text" placeholder="Edit Item" style={{display: 'none'}} defaultValue={item.value}/>
+		            		</span>
 		            		<span className="glyphicon glyphicon-trash delete" onClick={self.props.onDeleteItem.bind(null, item, 'todo')}></span>
 		            	</div>
 		            )

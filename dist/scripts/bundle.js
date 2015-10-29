@@ -44419,9 +44419,9 @@ var Home = React.createClass({displayName: "Home",
 
 	getInitialState: function() {
 		return {
-			todoItems: [],
+			todoItems: [{id: 0, value: 'test'}],
 			completedItems: [],
-			count: 0
+			count: 1
 		};
 	},
 
@@ -44512,23 +44512,41 @@ var Home = React.createClass({displayName: "Home",
 	    }
     },
 
+    editItemHandler: function(item, e) {
+	    var id = item.id;
+	    $('span.listItem.'+id).hide();
+	    $('.editText.'+id).show().focus();
+	    if( item.keyCode == 13 ) {
+	    	var list = this.state.todoItems;
+			for(var i = 0; i < list.length; i++) {
+			    var obj = list[i];
+			    console.log(id);
+			    if(list[i].id == obj.id) {
+			        list[i].value = event.target.value;
+			    }
+			}
+	    	this.setState({todoItems: list});
+	    	$('span.listItem').show();
+	    	$('.editText').hide().blur();
+	    }
+    },
+
 	render: function() {
-		var list;
 		return (
 			React.createElement("div", null, 
 				React.createElement("input", {
 					name: "add-todo", 
 					className: "text-box", 
 					placeholder: "What needs to be done?", 
-					value: this.value, 
 					onKeyDown: this.handleSubmit}), 
 
 				React.createElement(RouteHandler, {todoList: this.state.todoItems, 
-						  completedList: this.state.completedItems, 
-						  onDeleteAll: this.deleteAllHandler, 
-						  onDeleteItem: this.deleteItemHandler, 
-						  onMarkCompleted: this.markItemCompletedHandler, 
-						  onMarkTodo: this.markItemTodoHandler})
+				    completedList: this.state.completedItems, 
+				    onDeleteAll: this.deleteAllHandler, 
+				    onDeleteItem: this.deleteItemHandler, 
+				    onMarkCompleted: this.markItemCompletedHandler, 
+				    onMarkTodo: this.markItemTodoHandler, 
+				    onEditItem: this.editItemHandler})
 				
 			)
 		);
@@ -44617,7 +44635,13 @@ var TodoList = React.createClass({displayName: "TodoList",
 		            	React.createElement("div", {className: "item", key: item.id}, 
 		            		React.createElement("span", {className: "glyphicon glyphicon-check check", 
 		            			onClick: self.props.onMarkCompleted.bind(self, item)}), 
-		            		React.createElement("span", {className: "itemValue"}, item.value), 
+		            		" ", 
+		            		React.createElement("span", {className: "glyphicon glyphicon-pencil pencil", 
+		            			onClick: self.props.onEditItem.bind(self, item)}), 
+		            		React.createElement("span", {className: "itemValue"}, 
+		            			React.createElement("span", {className: 'listItem ' + item.id}, item.value), 
+		            			React.createElement("input", {className: 'editText ' + item.id, onKeyDown: self.props.onEditItem, type: "text", placeholder: "Edit Item", style: {display: 'none'}, defaultValue: item.value})
+		            		), 
 		            		React.createElement("span", {className: "glyphicon glyphicon-trash delete", onClick: self.props.onDeleteItem.bind(null, item, 'todo')})
 		            	)
 		            )

@@ -63,20 +63,29 @@ html, body{
 	font-size: 20px;
 	color:#0BA623;
 	cursor: pointer;
-	opacity: .2;
+	opacity: .9;
 }
 .check:hover{
-	opacity: 1;
+	opacity: .2;
 }
 .delete{
 	font-size: 20px;
 	color:#BF142D;
 	float: right;
 	cursor: pointer;
-	opacity: .2;
+	opacity: .6;
 }
 .delete:hover{
+	opacity: .2;
+}
+.pencil{
+	font-size: 20px;
+	color:#C3BD12;
+	cursor: pointer;
 	opacity: .8;
+}
+.pencil:hover{
+	opacity: .4;
 }
 footer{
 	padding:15px 0;
@@ -98,4 +107,9 @@ footer{
 }
 .all-items{
 	color:rgba(0,0,0,0.3);
+}
+.itemValue input, .itemValue input:active {
+	background-color: #f5f5f5;
+	border: none;
+	outline: none;
 }

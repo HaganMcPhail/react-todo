@@ -15,9 +15,9 @@ var Home = React.createClass({
 
 	getInitialState: function() {
 		return {
-			todoItems: [],
+			todoItems: [{id: 0, value: 'test'}],
 			completedItems: [],
-			count: 0
+			count: 1
 		};
 	},
 
@@ -108,23 +108,41 @@ var Home = React.createClass({
 	    }
     },
 
+    editItemHandler: function(item, e) {
+	    var id = item.id;
+	    $('span.listItem.'+id).hide();
+	    $('.editText.'+id).show().focus();
+	    if( item.keyCode == 13 ) {
+	    	var list = this.state.todoItems;
+			for(var i = 0; i < list.length; i++) {
+			    var obj = list[i];
+			    console.log(id);
+			    if(list[i].id == obj.id) {
+			        list[i].value = event.target.value;
+			    }
+			}
+	    	this.setState({todoItems: list});
+	    	$('span.listItem').show();
+	    	$('.editText').hide().blur();
+	    }
+    },
+
 	render: function() {
-		var list;
 		return (
 			<div>
 				<input
 					name="add-todo"
 					className="text-box"
 					placeholder="What needs to be done?"
-					value={this.value}
 					onKeyDown={this.handleSubmit} />
 
 				<RouteHandler todoList={this.state.todoItems} 
-						  completedList={this.state.completedItems}
-						  onDeleteAll={this.deleteAllHandler}
-						  onDeleteItem={this.deleteItemHandler}
-						  onMarkCompleted={this.markItemCompletedHandler}
-						  onMarkTodo={this.markItemTodoHandler} />
+				    completedList={this.state.completedItems}
+				    onDeleteAll={this.deleteAllHandler}
+				    onDeleteItem={this.deleteItemHandler}
+				    onMarkCompleted={this.markItemCompletedHandler}
+				    onMarkTodo={this.markItemTodoHandler}
+				    onEditItem={this.editItemHandler} />
 				
 			</div>
 		);
