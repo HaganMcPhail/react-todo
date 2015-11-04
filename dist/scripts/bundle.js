@@ -44392,7 +44392,7 @@ var Header = React.createClass({displayName: "Header",
 		return (
 			React.createElement("div", null, 
 				React.createElement("div", {className: "text-center"}, 
-					React.createElement("div", {className: "head"}, "the list")
+					React.createElement("div", {className: "head"}, "react list")
 				)
 			)
 		);
@@ -44419,50 +44419,47 @@ var Home = React.createClass({displayName: "Home",
 
 	getInitialState: function() {
 		return {
-			todoItems: [],
+			todoItems: [
+				{
+					'id':0,
+					'value': 'test'
+				},
+				{
+					'id':1,
+					'value': 'test2'
+				}
+			],
 			completedItems: [],
-			count: 1
+			count: 2
 		};
-	},
-
-	loadCommentsFromServer: function() {
-	    $.ajax({
-	      url: '/api/comments',
-	      dataType: 'json',
-	      cache: false,
-	      success: function(data) {
-	        this.setState({todoItems: data});
-	        console.log(this.state.todoItems);
-	      }.bind(this),
-	      error: function(xhr, status, err) {
-	        console.error('test ', status, err.toString());
-	      }.bind(this)
-	    });
-	},
-
-	componentDidMount: function() {
-	    this.loadCommentsFromServer();
-	    setInterval(this.loadCommentsFromServer, 10000);
 	},
 
 	//reusable remove and add functions
 	// *****************************************************************************************************************/
 	removeItemFromList: function(itemToRemove, listToRemoveFrom, list) {
-		for(var i = 0; i < listToRemoveFrom.length; i++) {
-		    var obj = listToRemoveFrom[i];
-
-		    if(itemToRemove.id == obj.id) {
-		        listToRemoveFrom.splice(i, 1);
-		        i--;
-		        if (list === 'todo') {
-					listToRemoveFrom = this.state.todoItems;
-					this.setState({todoItems: listToRemoveFrom});
-				} else {
-					listToRemoveFrom = this.state.completedItems;
-					this.setState({completedItems: listToRemoveFrom});
-				}
-		    }
+		var removeList = listToRemoveFrom;
+		removeList.splice($.inArray(itemToRemove, removeList),1);
+		if (list === 'todo') {
+			this.setState({todoItems: removeList});
+		} else {
+			this.setState({completedItems: removeList});
+			console.log(this.state.completedItems);
 		}
+
+		// for(var i = 0; i < removeList.length; i++) {
+		//     var obj = removeList[i];
+
+		//     if(itemToRemove.id == obj.id) {
+		//         removeList.splice(i, 1);
+		//         if (list === 'todo') {
+		//         	// console.log(listToRemoveFrom);
+		// 			this.setState({todoItems: removeList});
+		// 		} else {
+		// 			this.setState({completedItems: removeList});
+		// 			console.log(this.state.completedItems);
+		// 		}
+		//     }
+		// }
 	},
 
 	addItemToList: function(itemToAdd, listToAddTo, list) {
@@ -44475,7 +44472,7 @@ var Home = React.createClass({displayName: "Home",
 	},
 
 	// *****************************************************************************************************************/
-	// Deletle Functions
+	// Delete Functions
 	// *****************************************************************************************************************/
 
 	deleteItemHandler: function(item, list) {
@@ -44532,22 +44529,30 @@ var Home = React.createClass({displayName: "Home",
 	    }
     },
 
-    editItemHandler: function(item, e) {
-	    var id = item.id;
-	    $('span.listItem.'+id).hide();
-	    $('.editText.'+id).show().focus();
-	    if( item.keyCode == 13 ) {
-	    	var list = this.state.todoItems;
+    showEditItemTexbox: function(item) {
+    	$('span.listItem.'+item.id).hide();
+	    $('.editText.'+item.id).show().focus();
+    },
+
+    hideEditItemTextbox: function() {
+    	$('span.listItem').show();
+		$('.editText').hide().blur();
+    },
+
+    editItemSubmitHandler: function(item, list) {
+	    
+	    this.showEditItemTexbox(item);
+
+	    if( event.keyCode == 13 ) {
 			for(var i = 0; i < list.length; i++) {
 			    var obj = list[i];
-			    console.log(id);
-			    if(list[i].id == obj.id) {
-			        list[i].value = event.target.value;
+			    if(list[i].id == item.id) {
+			        list[i].value = $('.editText.'+item.id).val();
 			    }
 			}
+
 	    	this.setState({todoItems: list});
-	    	$('span.listItem').show();
-	    	$('.editText').hide().blur();
+	    	this.hideEditItemTextbox();
 	    }
     },
 
@@ -44558,7 +44563,8 @@ var Home = React.createClass({displayName: "Home",
 					name: "add-todo", 
 					className: "text-box", 
 					placeholder: "What needs to be done?", 
-					onKeyDown: this.handleSubmit}), 
+					onKeyDown: this.handleSubmit, 
+					autoComplete: "off"}), 
 
 				React.createElement(RouteHandler, {todoList: this.state.todoItems, 
 				    completedList: this.state.completedItems, 
@@ -44566,7 +44572,8 @@ var Home = React.createClass({displayName: "Home",
 				    onDeleteItem: this.deleteItemHandler, 
 				    onMarkCompleted: this.markItemCompletedHandler, 
 				    onMarkTodo: this.markItemTodoHandler, 
-				    onEditItem: this.editItemHandler})
+				    onEditItem: this.showEditItemTexbox, 
+				    onEditItemSubmit: this.editItemSubmitHandler})
 
 			)
 		);
@@ -44618,7 +44625,14 @@ var CompletedList = React.createClass({displayName: "CompletedList",
 		            	React.createElement("div", {className: "item", key: item.id}, 
 		            		React.createElement("span", {className: "glyphicon glyphicon-plus check icon", 
 		            			onClick: self.props.onMarkTodo.bind(self, item)}), 
-		            		React.createElement("span", {className: "itemValue"}, item.value), 
+		            		" ", 
+		            		React.createElement("span", {className: "glyphicon glyphicon-pencil pencil icon", 
+		            			onClick: self.props.onEditItem.bind(this, item)}), 
+		            		React.createElement("span", {className: "itemValue"}, 
+		            			React.createElement("span", {className: 'listItem ' + item.id}, item.value), 
+		            			React.createElement("input", {className: 'editText ' + item.id, type: "text", placeholder: "Edit Item", style: {display: 'none'}, defaultValue: item.value, 
+		            			autoComplete: "off", onKeyDown: self.props.onEditItemSubmit.bind(self, item, self.props.completedList)})
+		            		), 
 		            		React.createElement("span", {className: "glyphicon glyphicon-trash delete icon", onClick: self.props.onDeleteItem.bind(null, item, 'completed')})
 		            	)
 		            )
@@ -44657,10 +44671,11 @@ var TodoList = React.createClass({displayName: "TodoList",
 		            			onClick: self.props.onMarkCompleted.bind(self, item)}), 
 		            		" ", 
 		            		React.createElement("span", {className: "glyphicon glyphicon-pencil pencil icon", 
-		            			onClick: self.props.onEditItem.bind(self, item)}), 
+		            			onClick: self.props.onEditItem.bind(this, item)}), 
 		            		React.createElement("span", {className: "itemValue"}, 
 		            			React.createElement("span", {className: 'listItem ' + item.id}, item.value), 
-		            			React.createElement("input", {className: 'editText ' + item.id, onKeyDown: self.props.onEditItem, type: "text", placeholder: "Edit Item", style: {display: 'none'}, defaultValue: item.value})
+		            			React.createElement("input", {className: 'editText ' + item.id, type: "text", placeholder: "Edit Item", style: {display: 'none'}, defaultValue: item.value, 
+		            			autoComplete: "off", onKeyDown: self.props.onEditItemSubmit.bind(self, item, self.props.todoList)})
 		            		), 
 		            		React.createElement("span", {className: "glyphicon glyphicon-trash delete icon", onClick: self.props.onDeleteItem.bind(null, item, 'todo')})
 		            	)

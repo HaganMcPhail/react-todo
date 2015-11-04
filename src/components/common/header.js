@@ -9,7 +9,7 @@ var Header = React.createClass({
 		return (
 			<div>
 				<div className="text-center">
-					<div className="head">the list</div>
+					<div className="head">react list</div>
 				</div>
 			</div>
 		);

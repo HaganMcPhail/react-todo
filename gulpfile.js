@@ -30,44 +30,44 @@ var config = {
 	}
 }
 
-gulp.task('express', function() {
-	var fs = require('fs');
-	var path = require('path');
-	var express = require('express');
-	var bodyParser = require('body-parser');
-	var app = express();
+// gulp.task('express', function() {
+// 	var fs = require('fs');
+// 	var path = require('path');
+// 	var express = require('express');
+// 	var bodyParser = require('body-parser');
+// 	var app = express();
 
-	var COMMENTS_FILE = path.join(__dirname, 'items.json');
+// 	var COMMENTS_FILE = path.join(__dirname, 'items.json');
 
-	app.set('port', (process.env.PORT || 9005));
+// 	app.set('port', (process.env.PORT || 9005));
 
-	app.use('/', express.static(path.join(__dirname, 'public')));
-	app.use(bodyParser.json());
-	app.use(bodyParser.urlencoded({extended: true}));
+// 	app.use('/', express.static(path.join(__dirname, 'public')));
+// 	app.use(bodyParser.json());
+// 	app.use(bodyParser.urlencoded({extended: true}));
 
-	app.get('/api/comments', function(req, res) {
-	  fs.readFile(COMMENTS_FILE, function(err, data) {
-	    res.setHeader('Cache-Control', 'no-cache');
-	    res.json(JSON.parse(data));
-	  });
-	});
+// 	app.get('/api/comments', function(req, res) {
+// 	  fs.readFile(COMMENTS_FILE, function(err, data) {
+// 	    res.setHeader('Cache-Control', 'no-cache');
+// 	    res.json(JSON.parse(data));
+// 	  });
+// 	});
 
-	app.post('/api/comments', function(req, res) {
-	  fs.readFile(COMMENTS_FILE, function(err, data) {
-	    var comments = JSON.parse(data);
-	    comments.push(req.body);
-	    fs.writeFile(COMMENTS_FILE, JSON.stringify(comments, null, 4), function(err) {
-	      res.setHeader('Cache-Control', 'no-cache');
-	      res.json(comments);
-	    });
-	  });
-	});
+// 	app.post('/api/comments', function(req, res) {
+// 	  fs.readFile(COMMENTS_FILE, function(err, data) {
+// 	    var comments = JSON.parse(data);
+// 	    comments.push(req.body);
+// 	    fs.writeFile(COMMENTS_FILE, JSON.stringify(comments, null, 4), function(err) {
+// 	      res.setHeader('Cache-Control', 'no-cache');
+// 	      res.json(comments);
+// 	    });
+// 	  });
+// 	});
 
 
-	app.listen(app.get('port'), function() {
-	  console.log('Server started: http://localhost:' + app.get('port') + '/');
-	});
-});
+// 	app.listen(app.get('port'), function() {
+// 	  console.log('Server started: http://localhost:' + app.get('port') + '/');
+// 	});
+// });
 
 //Start a local development server
 gulp.task('connect', function() {
@@ -117,15 +117,15 @@ gulp.task('sass', function() {
 
 // Migrates images to dist folder
 // Note that I could even optimize my images here
-gulp.task('images', function () {
-    gulp.src(config.paths.images)
-        .pipe(gulp.dest(config.paths.dist + '/images'))
-        .pipe(connect.reload());
+// gulp.task('images', function () {
+//     gulp.src(config.paths.images)
+//         .pipe(gulp.dest(config.paths.dist + '/images'))
+//         .pipe(connect.reload());
 
-    //publish favicon
-    gulp.src('./src/favicon.ico')
-        .pipe(gulp.dest(config.paths.dist));
-});
+//     //publish favicon
+//     gulp.src('./src/favicon.ico')
+//         .pipe(gulp.dest(config.paths.dist));
+// });
 
 gulp.task('lint', function() {
 	return gulp.src(config.paths.js)
@@ -145,4 +145,4 @@ gulp.task('watch', function() {
 	gulp.watch(config.paths.sass, ['sass']);
 });
 
-gulp.task('default', ['html', 'js', 'watch', 'fonts', 'sass', 'css', 'images', 'lint', 'open', 'express']);
+gulp.task('default', ['html', 'js', 'watch', 'fonts', 'sass', 'css', 'lint', 'open']);

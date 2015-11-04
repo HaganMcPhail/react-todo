@@ -19,10 +19,11 @@ var TodoList = React.createClass({
 		            			onClick={self.props.onMarkCompleted.bind(self, item)}></span>
 		            		&nbsp;
 		            		<span className="glyphicon glyphicon-pencil pencil icon"
-		            			onClick={self.props.onEditItem.bind(self, item)}></span>
+		            			onClick={self.props.onEditItem.bind(this, item)}></span>
 		            		<span className="itemValue">
 		            			<span className={'listItem ' + item.id}>{item.value}</span>
-		            			<input className={'editText ' + item.id} onKeyDown={self.props.onEditItem} type="text" placeholder="Edit Item" style={{display: 'none'}} defaultValue={item.value}/>
+		            			<input className={'editText ' + item.id} type="text" placeholder="Edit Item" style={{display: 'none'}} defaultValue={item.value}
+		            			autoComplete="off" onKeyDown={self.props.onEditItemSubmit.bind(self, item, self.props.todoList)} />
 		            		</span>
 		            		<span className="glyphicon glyphicon-trash delete icon" onClick={self.props.onDeleteItem.bind(null, item, 'todo')}></span>
 		            	</div>
