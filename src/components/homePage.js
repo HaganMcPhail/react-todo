@@ -3,7 +3,6 @@
 var React = require('react');
 var Router = require('react-router');
 var RouteHandler = Router.RouteHandler;
-var Input = require('./input');
 var TodoList = require('./list/todoList');
 var CompletedList = require('./list/completedList');
 var Link = Router.Link;
@@ -16,22 +15,20 @@ var Home = React.createClass({
 	getInitialState: function() {
 		return {
 			todoItems: [
-				{
-					'id':0,
-					'value': 'test'
-				},
-				{
-					'id':1,
-					'value': 'test2'
-				}
+				// {
+				// 	'id':0,
+				// 	'value': 'test'
+				// },
+				// {
+				// 	'id':1,
+				// 	'value': 'test2'
+				// }
 			],
 			completedItems: [],
 			count: 2
 		};
 	},
 
-	//reusable remove and add functions
-	// *****************************************************************************************************************/
 	removeItemFromList: function(itemToRemove, listToRemoveFrom, list) {
 		var removeList = listToRemoveFrom;
 		removeList.splice($.inArray(itemToRemove, removeList),1);
@@ -39,23 +36,7 @@ var Home = React.createClass({
 			this.setState({todoItems: removeList});
 		} else {
 			this.setState({completedItems: removeList});
-			console.log(this.state.completedItems);
 		}
-
-		// for(var i = 0; i < removeList.length; i++) {
-		//     var obj = removeList[i];
-
-		//     if(itemToRemove.id == obj.id) {
-		//         removeList.splice(i, 1);
-		//         if (list === 'todo') {
-		//         	// console.log(listToRemoveFrom);
-		// 			this.setState({todoItems: removeList});
-		// 		} else {
-		// 			this.setState({completedItems: removeList});
-		// 			console.log(this.state.completedItems);
-		// 		}
-		//     }
-		// }
 	},
 
 	addItemToList: function(itemToAdd, listToAddTo, list) {
@@ -66,10 +47,6 @@ var Home = React.createClass({
 			this.setState({completedItems: listToAddTo});
 		}
 	},
-
-	// *****************************************************************************************************************/
-	// Delete Functions
-	// *****************************************************************************************************************/
 
 	deleteItemHandler: function(item, list) {
 		var listToRemoveFrom;
@@ -90,10 +67,6 @@ var Home = React.createClass({
 		}
 	},
 
-	// *****************************************************************************************************************/
-	// mark items as todo/complete
-	// *****************************************************************************************************************/
-
 	markItemCompletedHandler: function(item) {
 		var listToRemoveFrom = this.state.todoItems,
 			listToAddTo = this.state.completedItems;
@@ -109,10 +82,6 @@ var Home = React.createClass({
 		this.removeItemFromList(item, listToRemoveFrom, 'completed');
 		this.addItemToList(item, listToAddTo, 'todo');
 	},
-
-	// *****************************************************************************************************************/
-	// handle text to add to the todo list
-	// *****************************************************************************************************************/
 
 	handleSubmit: function(e) {
 	    var newItem = {id: this.state.count, value: event.target.value};
@@ -135,7 +104,7 @@ var Home = React.createClass({
 		$('.editText').hide().blur();
     },
 
-    editItemSubmitHandler: function(item, list) {
+    editItemSubmitHandler: function(item, list, listName) {
 	    
 	    this.showEditItemTexbox(item);
 
@@ -143,12 +112,18 @@ var Home = React.createClass({
 			for(var i = 0; i < list.length; i++) {
 			    var obj = list[i];
 			    if(list[i].id == item.id) {
-			        list[i].value = $('.editText.'+item.id).val();
+			        list[i].value = event.target.value;
 			    }
 			}
 
-	    	this.setState({todoItems: list});
+			if (listName === 'todo') {
+				this.setState({todoItems: list});
+			} else {
+				this.setState({completedItems: list});
+			}
+
 	    	this.hideEditItemTextbox();
+	    	console.table(this.state.todoItems);
 	    }
     },
 

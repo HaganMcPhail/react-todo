@@ -13,7 +13,6 @@ var routes = (
 		<DefaultRoute handler={require('./components/list/todoList')} />
 		<Route name="completed" handler={require('./components/list/completedList')} />
 		<Route name="todo" handler={require('./components/list/todoList')} />
-		// <NotFoundRoute handler={require('./components/notFoundPage')} />
 	</Route>
 );
 

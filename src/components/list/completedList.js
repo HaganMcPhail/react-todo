@@ -22,10 +22,12 @@ var CompletedList = React.createClass({
 		            			onClick={self.props.onEditItem.bind(this, item)}></span>
 		            		<span className="itemValue">
 		            			<span className={'listItem ' + item.id}>{item.value}</span>
-		            			<input className={'editText ' + item.id} type="text" placeholder="Edit Item" style={{display: 'none'}} defaultValue={item.value}
-		            			autoComplete="off" onKeyDown={self.props.onEditItemSubmit.bind(self, item, self.props.completedList)} />
+		            			<input className={'editText ' + item.id} type="text" placeholder="Edit Item" 
+		            				style={{display: 'none'}} defaultValue={item.value} autoComplete="off" 
+		            				onKeyDown={self.props.onEditItemSubmit.bind(self, item, self.props.completedList, 'completed')} />
 		            		</span>
-		            		<span className="glyphicon glyphicon-trash delete icon" onClick={self.props.onDeleteItem.bind(null, item, 'completed')}></span>
+		            		<span className="glyphicon glyphicon-trash delete icon" 
+		            			onClick={self.props.onDeleteItem.bind(null, item, 'completed')}></span>
 		            	</div>
 		            )
 		          })
