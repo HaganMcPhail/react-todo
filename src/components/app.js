@@ -5,7 +5,6 @@ var Header = require('./common/header');
 var Footer = require('./common/footer');
 var Home = require('./homePage');
 var RouteHandler = require('react-router').RouteHandler;
-$ = jQuery = require('jquery');
 
 var App = React.createClass({
 	render: function() {
