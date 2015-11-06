@@ -1,41 +1,40 @@
 "use strict";
 
 var React = require('react');
-var Lodash = require('lodash');
 var Router = require('react-router');
+var Item = require('../list/item.js');
 var Link = Router.Link;
 
 var TodoList = React.createClass({
 
+	deleteAll: function() {
+		this.props.onDeleteAll('todo');
+	},
+
 	render: function() {
-		var self = this;
+		var self = this,
+		items = [];
+
+		this.props.todoList.forEach(function(item) {
+			items.push(<Item key={item.id} item={item}
+					itemType="todo"
+					addItemIcon="unchecked"
+					todoList={this.props.todoItems}
+				    completedList={this.props.completedItems}
+				    onDeleteItem={this.props.onDeleteItem}
+				    onEditItem={this.props.onEditItem}
+				    onEditItemSubmit={this.props.onEditItemSubmit}
+				    onChangeItemList={this.props.onChangeItemList}
+				    showInput={this.props.showInput} />);
+		}.bind(this));
+
 		return (
 			<div>
-				{
-		          this.props.todoList.map(function(item, i) {
-		            return (
-		            	<div className="item" key={item.id}>
-		            		<span className="glyphicon glyphicon-check check icon"
-		            			onClick={self.props.onMarkCompleted.bind(self, item)}></span>
-		            		&nbsp;
-		            		<span className="glyphicon glyphicon-pencil pencil icon"
-		            			onClick={self.props.onEditItem.bind(this, item)}></span>
-		            		<span className="itemValue">
-		            			<span className={'listItem ' + item.id}>{item.value}</span>
-		            			<input className={'editText ' + item.id} type="text" placeholder="Edit Item" 
-		            				style={{display: 'none'}} defaultValue={item.value} autoComplete="off" 
-		            				onKeyDown={self.props.onEditItemSubmit.bind(self, item, self.props.todoList, 'todo')} />
-		            		</span>
-		            		<span className="glyphicon glyphicon-trash delete icon" 
-		            			onClick={self.props.onDeleteItem.bind(null, item, 'todo')}></span>
-		            	</div>
-		            )
-		          })
-			    }
+				{items}
 			    <div className="item">
             		<span className="itemValue"><span className="all-items"></span></span>
             		<span title="delete all todo items" className="glyphicon glyphicon-remove delete icon" 
-            			onClick={this.props.onDeleteAll.bind(null, 'todo')}></span>
+            			onClick={this.deleteAll}></span>
             	</div>
 			</div>
 		);

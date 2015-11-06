@@ -90,22 +90,27 @@ footer{
 }
 
 .pagesBtn {
-	&:hover, &:focus, &:active {
+	&:hover, &:active, &:focus {
 		color: #777;
-		outline: none !important;
+	}
+	&:focus {
+		outline:2px solid $black25 !important;
 	}
 }
 .all-items{
 	color:rgba(0,0,0,0.3);
 }
 .itemValue {
-	input, input:active {
+	input {
 		background-color: $offwhite;
 		border: none;
 		outline: none;
-		line-height: 16px;
+		line-height: 22px;
 		font-size: 22px;
 		padding: 0px;
 		margin: 0px;
+		&:focus, &:active {
+			color: $black25 !important;
+		}
 	}
 }

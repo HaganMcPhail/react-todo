@@ -5,6 +5,7 @@ var Router = require('react-router');
 var RouteHandler = Router.RouteHandler;
 var TodoList = require('./list/todoList');
 var CompletedList = require('./list/completedList');
+var _ = require('lodash');
 var Link = Router.Link;
 
 var Home = React.createClass({
@@ -15,23 +16,25 @@ var Home = React.createClass({
 	getInitialState: function() {
 		return {
 			todoItems: [
-				// {
-				// 	'id':0,
-				// 	'value': 'test'
-				// },
-				// {
-				// 	'id':1,
-				// 	'value': 'test2'
-				// }
+				{
+					'id':1,
+					'value': 'test1'
+				},
+				{
+					'id':2,
+					'value': 'test2'
+				}
 			],
 			completedItems: [],
-			count: 2
+			count: 3,
+			showInput: false
 		};
 	},
 
-	removeItemFromList: function(itemToRemove, listToRemoveFrom, list) {
-		var removeList = listToRemoveFrom;
-		removeList.splice($.inArray(itemToRemove, removeList),1);
+	removeItemFromList: function(itemToRemove, list) {
+		var removeList = this.state[list+'Items'];
+		_.remove(removeList, itemToRemove);
+
 		if (list === 'todo') {
 			this.setState({todoItems: removeList});
 		} else {
@@ -39,24 +42,18 @@ var Home = React.createClass({
 		}
 	},
 
-	addItemToList: function(itemToAdd, listToAddTo, list) {
-		listToAddTo.push(itemToAdd);
+	addItemToList: function(itemToAdd, list) {
+		var addList = this.state[list+'Items'];
+		addList.push(itemToAdd);
 		if (list === 'todo') {
-			this.setState({todoItems: listToAddTo});
+			this.setState({todoItems: addList});
 		} else {
-			this.setState({completedItems: listToAddTo});
+			this.setState({completedItems: addList});
 		}
 	},
 
 	deleteItemHandler: function(item, list) {
-		var listToRemoveFrom;
-		if (list === 'todo') {
-			listToRemoveFrom = this.state.todoItems;
-		} else {
-			listToRemoveFrom = this.state.completedItems;
-		}
-
-		this.removeItemFromList(item, listToRemoveFrom, list);
+		this.removeItemFromList(item, list);
 	},
 
 	deleteAllHandler: function(list) {
@@ -67,11 +64,21 @@ var Home = React.createClass({
 		}
 	},
 
+	changeItemListHandler: function(item, currentList){
+		if (currentList === 'todo') {
+			this.removeItemFromList(item, 'todo');
+			this.addItemToList(item, 'completed');
+		} else {
+			this.removeItemFromList(item, 'completed');
+			this.addItemToList(item, 'todo');
+		}
+	},
+
 	markItemCompletedHandler: function(item) {
 		var listToRemoveFrom = this.state.todoItems,
 			listToAddTo = this.state.completedItems;
 
-		this.removeItemFromList(item, listToRemoveFrom, 'todo');
+		this.removeItemFromList(item, 'todo');
 		this.addItemToList(item, listToAddTo, 'completed');
 	},
 
@@ -79,13 +86,12 @@ var Home = React.createClass({
 		var listToAddTo = this.state.todoItems,
 			listToRemoveFrom = this.state.completedItems;
 
-		this.removeItemFromList(item, listToRemoveFrom, 'completed');
-		this.addItemToList(item, listToAddTo, 'todo');
+		
 	},
 
-	handleSubmit: function(e) {
+	handleSubmit: function(event) {
 	    var newItem = {id: this.state.count, value: event.target.value};
-	    if( e.keyCode == 13 ) {
+	    if( event.keyCode == 13 ) {
 	        var list = this.state.todoItems;
 	        list.push(newItem);
 	        this.setState({todoItems: list, count: this.state.count + 1});
@@ -94,37 +100,35 @@ var Home = React.createClass({
 	    }
     },
 
-    showEditItemTexbox: function(item) {
-    	$('span.listItem.'+item.id).hide();
-	    $('.editText.'+item.id).show().focus();
+    showEditItemTexbox: function() {
+    	this.setState({showInput: true});
     },
 
     hideEditItemTextbox: function() {
-    	$('span.listItem').show();
-		$('.editText').hide().blur();
+    	this.setState({showInput: false});
     },
 
-    editItemSubmitHandler: function(item, list, listName) {
-	    
-	    this.showEditItemTexbox(item);
+    editItemSubmitHandler: function(item, listName) {
 
-	    if( event.keyCode == 13 ) {
-			for(var i = 0; i < list.length; i++) {
-			    var obj = list[i];
-			    if(list[i].id == item.id) {
-			        list[i].value = event.target.value;
-			    }
-			}
+	    var list = this.state[listName+'Items'];
 
-			if (listName === 'todo') {
-				this.setState({todoItems: list});
-			} else {
-				this.setState({completedItems: list});
-			}
+		for(var i = 0; i < list.length; i++) {
+		    var obj = list[i];
+		    if(list[i].id == item.id) {
+		        list[i].value = event.target.value;
+		    }
+		}
 
-	    	this.hideEditItemTextbox();
-	    	console.table(this.state.todoItems);
-	    }
+		if (listName === 'todo') {
+			this.setState({todoItems: list});
+		} else {
+			this.setState({completedItems: list});
+		}
+
+    	if(event.keyCode === 13) {
+    		this.hideEditItemTextbox();
+    	}
+
     },
 
 	render: function() {
@@ -141,10 +145,10 @@ var Home = React.createClass({
 				    completedList={this.state.completedItems}
 				    onDeleteAll={this.deleteAllHandler}
 				    onDeleteItem={this.deleteItemHandler}
-				    onMarkCompleted={this.markItemCompletedHandler}
-				    onMarkTodo={this.markItemTodoHandler}
 				    onEditItem={this.showEditItemTexbox}
-				    onEditItemSubmit={this.editItemSubmitHandler} />
+				    onEditItemSubmit={this.editItemSubmitHandler}
+				    onChangeItemList={this.changeItemListHandler} 
+				    showInput={this.state.showInput} />
 
 			</div>
 		);
