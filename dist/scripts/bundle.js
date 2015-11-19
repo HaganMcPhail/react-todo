@@ -35218,29 +35218,63 @@ var Home = React.createClass({displayName: "Home",
 			],
 			completedItems: [],
 			count: 3,
-			showInput: false
+			showInput: false,
+			showDeleteAllTodo: true,
+			showDeleteAllCompleted: true
 		};
 	},
 
+	toggleDeleteAll: function () {
+		if (this.state.todoItems.length > 0) {
+			this.setState({showDeleteAllTodo: true});
+		} else {
+			this.setState({showDeleteAllTodo: false});
+		}
+
+		if (this.state.completedItems.length > 0) {
+			this.setState({showDeleteAllCompleted: true});
+		} else {
+			this.setState({showDeleteAllCompleted: false});
+		}
+
+		console.log(this.state);
+		// console.table(this.state.completedItems);
+	},
+
+	componentWillMount: function() {
+		this.toggleDeleteAll();
+	},
+
 	removeItemFromList: function(itemToRemove, list) {
-		var removeList = this.state[list+'Items'];
-		_.remove(removeList, itemToRemove);
+		var removeList;
+
+		if (itemToRemove === 'all'){
+			removeList = [];
+		} else {
+			removeList = this.state[list+'Items']
+			_.remove(removeList, itemToRemove);
+		}
 
 		if (list === 'todo') {
 			this.setState({todoItems: removeList});
 		} else {
 			this.setState({completedItems: removeList});
-		}
+		}	
+
 	},
 
 	addItemToList: function(itemToAdd, list) {
 		var addList = this.state[list+'Items'];
 		addList.push(itemToAdd);
+		
 		if (list === 'todo') {
 			this.setState({todoItems: addList});
 		} else {
 			this.setState({completedItems: addList});
 		}
+
+		this.toggleDeleteAll();
+
 	},
 
 	deleteItemHandler: function(item, list) {
@@ -35248,11 +35282,15 @@ var Home = React.createClass({displayName: "Home",
 	},
 
 	deleteAllHandler: function(list) {
+
 		if (list === 'todo') {
-			this.setState({todoItems: []});
+			this.removeItemFromList('all', 'todo')
 		} else {
-			this.setState({completedItems: []});
+			this.removeItemFromList('all', 'completed')
 		}
+
+		this.toggleDeleteAll();
+
 	},
 
 	changeItemListHandler: function(item, currentList){
@@ -35265,21 +35303,6 @@ var Home = React.createClass({displayName: "Home",
 		}
 	},
 
-	markItemCompletedHandler: function(item) {
-		var listToRemoveFrom = this.state.todoItems,
-			listToAddTo = this.state.completedItems;
-
-		this.removeItemFromList(item, 'todo');
-		this.addItemToList(item, listToAddTo, 'completed');
-	},
-
-	markItemTodoHandler: function(item) {
-		var listToAddTo = this.state.todoItems,
-			listToRemoveFrom = this.state.completedItems;
-
-		
-	},
-
 	handleSubmit: function(event) {
 	    var newItem = {id: this.state.count, value: event.target.value};
 	    if( event.keyCode == 13 ) {
@@ -35289,6 +35312,8 @@ var Home = React.createClass({displayName: "Home",
 	        event.target.value = '';
 	        this.transitionTo('todo');
 	    }
+
+	    this.toggleDeleteAll();
     },
 
     showEditItemTexbox: function() {
@@ -35339,7 +35364,9 @@ var Home = React.createClass({displayName: "Home",
 				    onEditItem: this.showEditItemTexbox, 
 				    onEditItemSubmit: this.editItemSubmitHandler, 
 				    onChangeItemList: this.changeItemListHandler, 
-				    showInput: this.state.showInput})
+				    showInput: this.state.showInput, 
+				    showDeleteAllTodo: this.state.showDeleteAllTodo, 
+				    showDeleteAllCompleted: this.state.showDeleteAllCompleted})
 
 			)
 		);
@@ -35348,19 +35375,16 @@ var Home = React.createClass({displayName: "Home",
 
 module.exports = Home;
 
-},{"./list/completedList":201,"./list/todoList":203,"lodash":2,"react":196,"react-router":27}],201:[function(require,module,exports){
+},{"./list/completedList":201,"./list/todoList":204,"lodash":2,"react":196,"react-router":27}],201:[function(require,module,exports){
 "use strict";
 
 var React = require('react');
 var Router = require('react-router');
 var Item = require('../list/item.js');
+var DeleteAll = require('../list/deleteAll.js');
 var Link = Router.Link;
 
 var TodoList = React.createClass({displayName: "TodoList",
-
-	deleteAll: function() {
-		this.props.onDeleteAll('completed');
-	},
 
 	render: function() {
 		var self = this,
@@ -35370,8 +35394,8 @@ var TodoList = React.createClass({displayName: "TodoList",
 			items.push(React.createElement(Item, {key: item.id, item: item, 
 					itemType: "completed", 
 					addItemIcon: "check", 
-					todoList: this.props.todoItems, 
-				    completedList: this.props.completedItems, 
+					todoList: this.props.todoList, 
+				    completedList: this.props.completedList, 
 				    onDeleteItem: this.props.onDeleteItem, 
 				    onEditItem: this.props.onEditItem, 
 				    onEditItemSubmit: this.props.onEditItemSubmit, 
@@ -35382,11 +35406,7 @@ var TodoList = React.createClass({displayName: "TodoList",
 		return (
 			React.createElement("div", null, 
 				items, 
-			    React.createElement("div", {className: "item"}, 
-            		React.createElement("span", {className: "itemValue"}, React.createElement("span", {className: "all-items"})), 
-            		React.createElement("span", {title: "delete all completed items", className: "glyphicon glyphicon-remove delete icon", 
-            			onClick: this.deleteAll})
-            	)
+			     this.props.showDeleteAllCompleted ? React.createElement(DeleteAll, {itemType: "completed", onDeleteAll: this.props.onDeleteAll}) : null
 			)
 		);
 	}
@@ -35394,7 +35414,34 @@ var TodoList = React.createClass({displayName: "TodoList",
 
 module.exports = TodoList;
 
-},{"../list/item.js":202,"react":196,"react-router":27}],202:[function(require,module,exports){
+},{"../list/deleteAll.js":202,"../list/item.js":203,"react":196,"react-router":27}],202:[function(require,module,exports){
+"use strict";
+
+var React = require('react');
+var Router = require('react-router');
+var Item = require('../list/item.js');
+var Link = Router.Link;
+
+var DeleteAll = React.createClass({displayName: "DeleteAll",
+
+	deleteAll: function() {
+		this.props.onDeleteAll(this.props.itemType);
+	},
+
+	render: function() {
+		return (
+		    React.createElement("div", {className: "item"}, 
+        		React.createElement("span", {className: "itemValue"}, React.createElement("span", {className: "all-items"})), 
+        		React.createElement("span", {title: "delete all items", className: "glyphicon glyphicon-remove delete icon", 
+        			onClick: this.deleteAll})
+        	)
+		);
+	}
+});
+
+module.exports = DeleteAll;
+
+},{"../list/item.js":203,"react":196,"react-router":27}],203:[function(require,module,exports){
 "use strict";
 
 var React = require('react');
@@ -35448,19 +35495,16 @@ var Item = React.createClass({displayName: "Item",
 
 module.exports = Item;
 
-},{"lodash":2,"react":196,"react-router":27}],203:[function(require,module,exports){
+},{"lodash":2,"react":196,"react-router":27}],204:[function(require,module,exports){
 "use strict";
 
 var React = require('react');
 var Router = require('react-router');
 var Item = require('../list/item.js');
+var DeleteAll = require('../list/deleteAll.js');
 var Link = Router.Link;
 
 var TodoList = React.createClass({displayName: "TodoList",
-
-	deleteAll: function() {
-		this.props.onDeleteAll('todo');
-	},
 
 	render: function() {
 		var self = this,
@@ -35470,8 +35514,8 @@ var TodoList = React.createClass({displayName: "TodoList",
 			items.push(React.createElement(Item, {key: item.id, item: item, 
 					itemType: "todo", 
 					addItemIcon: "unchecked", 
-					todoList: this.props.todoItems, 
-				    completedList: this.props.completedItems, 
+					todoList: this.props.todoList, 
+				    completedList: this.props.completedList, 
 				    onDeleteItem: this.props.onDeleteItem, 
 				    onEditItem: this.props.onEditItem, 
 				    onEditItemSubmit: this.props.onEditItemSubmit, 
@@ -35482,11 +35526,7 @@ var TodoList = React.createClass({displayName: "TodoList",
 		return (
 			React.createElement("div", null, 
 				items, 
-			    React.createElement("div", {className: "item"}, 
-            		React.createElement("span", {className: "itemValue"}, React.createElement("span", {className: "all-items"})), 
-            		React.createElement("span", {title: "delete all todo items", className: "glyphicon glyphicon-remove delete icon", 
-            			onClick: this.deleteAll})
-            	)
+			     this.props.showDeleteAllTodo ? React.createElement(DeleteAll, {itemType: "todo", onDeleteAll: this.props.onDeleteAll}) : null
 			)
 		);
 	}
@@ -35494,7 +35534,7 @@ var TodoList = React.createClass({displayName: "TodoList",
 
 module.exports = TodoList;
 
-},{"../list/item.js":202,"react":196,"react-router":27}],204:[function(require,module,exports){
+},{"../list/deleteAll.js":202,"../list/item.js":203,"react":196,"react-router":27}],205:[function(require,module,exports){
 "use strict";
 
 var React = require('react');
@@ -35505,7 +35545,7 @@ Router.run(routes, function(Handler) {
 	React.render(React.createElement(Handler, null), document.getElementById('app'));
 }); 
 
-},{"./routes":205,"react":196,"react-router":27}],205:[function(require,module,exports){
+},{"./routes":206,"react":196,"react-router":27}],206:[function(require,module,exports){
 "use strict";
 
 var React = require('react');
@@ -35527,4 +35567,4 @@ var routes = (
 
 module.exports = routes;
 
-},{"./components/app":197,"./components/list/completedList":201,"./components/list/todoList":203,"react":196,"react-router":27}]},{},[204]);
+},{"./components/app":197,"./components/list/completedList":201,"./components/list/todoList":204,"react":196,"react-router":27}]},{},[205]);
